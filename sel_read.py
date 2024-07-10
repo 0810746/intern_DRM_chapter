@@ -69,3 +69,11 @@ print(all_text)
 
 # 關閉瀏覽器
 driver.quit()
+
+
+
+
+a2 = ['4', '4.3', '4.3.4', '4.3.2.4','','']
+sorted_a2 = sorted(a2, key=lambda x: list(map(int, x.split('.'))))
+lowest = sorted_a2[-1]
+print(lowest)
