@@ -99,4 +99,58 @@ all_tables.extend(tables)
 
 classify_and_save_tables(all_tables, output_dir)
 
+import pandas as pd
+from docx import Document
+import os
+import numpy as np
+
+#####要先創兩個空excel 叫columns3 columns4
+def read_tables_from_docx(docx_path):
+    doc = Document(docx_path)
+    tables = []
+    for table in doc.tables:
+        data = []
+        for row in table.rows:
+            data.append([cell.text for cell in row.cells])
+        tables.append(pd.DataFrame(data))
+    return tables
+
+def classify_and_save_tables(tables, output_dir):
+    classified_tables = {}
+
+    for table in tables:
+        key = (table.shape[1], tuple(table.iloc[0]))  # Use number of columns and first row as key
+        if key not in classified_tables:
+            classified_tables[key] = []
+        classified_tables[key].append(table)
+    
+
+
+    for key, table_list in classified_tables.items():    
+        num_columns, first_row = key 
+        print('^^^^^^^')
+        A=f"columns{num_columns}.xlsx"
+        with pd.ExcelWriter(A,mode='a',engine='openpyxl') as writer: #mode='a'是寫入 add
+            for i, table in enumerate(table_list):           
+                table.to_excel(writer, index=False, header=False, sheet_name=f'Table_{first_row,i+1}')
+                print(A,num_columns,first_row,i)
+                print('__________')
+
+
+
+
+input_dir = r'C:\Users\ccc55\Desktop\瑞\source2.docx'
+output_dir = 'path_to_save_excel_files'
+os.makedirs(output_dir, exist_ok=True)
+
+all_tables = []
+
+
+
+
+tables = read_tables_from_docx(input_dir)
+all_tables.extend(tables)
+
+classify_and_save_tables(all_tables, output_dir)
+
 
