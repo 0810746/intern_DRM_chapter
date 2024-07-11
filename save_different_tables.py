@@ -1,4 +1,5 @@
 import pandas as pd
+# from openpyxl.utils.dataframe import dataframe_to_rows
 
 def classify_and_save_tables(tables, output_dir):
     # 创建一个字典来存储分类后的表格
@@ -19,10 +20,11 @@ def classify_and_save_tables(tables, output_dir):
         
         # 将列名作为文件名的一部分
         filename = output_dir + f'\\{"_".join(key)}.xlsx'
-        
+
+        combined_table.to_excel(filename, index=False, engine='openpyxl')
         # 使用 Pandas 的 ExcelWriter 保存表格到 Excel 文件中
-        with pd.ExcelWriter(filename, engine='openpyxl') as writer:
-            combined_table.to_excel(writer, index=False)
+        # with pd.ExcelWriter(filename, engine='openpyxl') as writer:
+        #     combined_table.to_excel(writer, index=False)
 
     print(f"Successfully saved classified tables to {output_dir}")
 
