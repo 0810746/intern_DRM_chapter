@@ -63,6 +63,7 @@ for row in table.find_all('tr'):
     for cell in cells:
         # 檢查儲存格的文本是否為 &nbsp;，如果是則替換為空字符串
         if cell.text.strip() == '\xa0':
+            不要append就好
             cell_table.append('')
         else:
             cell_table.append(cell.text.strip())
