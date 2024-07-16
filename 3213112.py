@@ -47,3 +47,22 @@ output_file = 'output.xlsx'
 df.to_excel(output_file, index=False, header=False)
 
 print(f"Successfully saved table data to {output_file}")
+
+
+
+
+# 遍歷每個表格，去除 &nbsp; 並添加到新列表中
+for table in tables:
+    cleaned_table = table.replace('\xa0', '')  # \xa0 是 non-breaking space (&nbsp;) 的 Unicode 編碼
+    cleaned_tables.append(cleaned_table)
+data = []
+
+for row in table.find_all('tr'):
+    cell_table = []
+    cells = row.find_all('td')
+    for cell in cells:
+        # 檢查儲存格的文本是否為 &nbsp;，如果是則替換為空字符串
+        if cell.text.strip() == '\xa0':
+            cell_table.append('')
+        else:
+            cell_table.append(cell.text.strip())
