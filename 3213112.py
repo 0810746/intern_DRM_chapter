@@ -28,6 +28,26 @@ for row in rows:
                 row_data.append(cell_text)
     table_data.append(row_data)
 
+
+import re
+from docx import Document
+
+# 打開 Word 文件
+input_path = r'C:\Users\steve\Desktop\intern_practice\small\in_data\論文.docx'
+document = Document(input_path)
+
+# 定義匹配模式
+pattern = re.compile(r'\bkjh\.\d+\.\d+\.\d+\.kjh\.\d+\.kh\b')
+
+# 遍歷所有表格
+for table in document.tables:
+    for row in table.rows:
+        for cell in row.cells:
+            # 檢查單元格內容是否匹配模式
+            if pattern.match(cell.text):
+                print(f'匹配內容: {cell.text} 在第 {document.tables.index(table) + 1} 張表, 第 {table.rows.index(row) + 1} 行, 第 {row.cells.index(cell) + 1} 列')
+
+
 # 將數據轉換為 DataFrame
 df = pd.DataFrame(table_data)
 
