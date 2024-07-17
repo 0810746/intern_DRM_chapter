@@ -69,21 +69,27 @@ df.to_excel(output_file, index=False, header=False)
 print(f"Successfully saved table data to {output_file}")
 
 
+#====================================================================
+# 找到 <p> 元素中的所有 <span> 和 <br> 元素
+p_element = driver.find_element(By.XPATH, '//p')
+span_elements = p_element.find_elements(By.XPATH, './span | ./br')
+
+# 遍歷元素並組合文本，保留 <br> 標籤
+combined_text = ""
+for element in span_elements:
+    if element.tag_name == 'span':
+        combined_text += element.text
+    elif element.tag_name == 'br':
+        combined_text += '<br>'
 
 
-# 遍歷每個表格，去除 &nbsp; 並添加到新列表中
-for table in tables:
-    cleaned_table = table.replace('\xa0', '')  # \xa0 是 non-breaking space (&nbsp;) 的 Unicode 編碼
-    cleaned_tables.append(cleaned_table)
-data = []
+# 找到 <p> 元素
+p_element = driver.find_element(By.XPATH, '//p')
 
-for row in table.find_all('tr'):
-    cell_table = []
-    cells = row.find_all('td')
-    for cell in cells:
-        # 檢查儲存格的文本是否為 &nbsp;，如果是則替換為空字符串
-        if cell.text.strip() == '\xa0':
-            不要append就好
-            cell_table.append('')
-        else:
-            cell_table.append(cell.text.strip())
+# 遍歷 <p> 元素中的所有子元素
+combined_text = ""
+for child in p_element.find_elements(By.XPATH, './*'):
+    if child.tag_name == 'span':
+        combined_text += child.text
+    elif child.tag_name == 'br':
+        combined_text += '\n'  # 或者使用 '<br>' 來保留 HTML 標籤
