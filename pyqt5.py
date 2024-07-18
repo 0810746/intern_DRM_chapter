@@ -1,4 +1,4 @@
-import sys
+import sys #https://steam.oxxostudio.tw/category/python/pyqt5/qlabel.html
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QFileDialog
 
