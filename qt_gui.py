@@ -66,6 +66,19 @@ class Ui_Form(object):
         self.pushButton.setObjectName("pushButton")
         self.pushButton.setVisible(False)  # Hide the upload button initially
 
+        
+
+        # Choose output folder button=====================================================================
+        self.outputButton = QtWidgets.QPushButton(Form)
+        self.outputButton.setGeometry(QtCore.QRect(360, 220, 171, 31))
+        font.setPointSize(12)
+        self.outputButton.setFont(font)
+        self.outputButton.setObjectName("outputButton")
+        self.outputButton.setVisible(False)  # Hide the output button initially
+
+
+
+        
         self.label = QtWidgets.QLabel(Form)
         self.label.setGeometry(QtCore.QRect(80, 80, 431, 71))
         font.setPointSize(20)
@@ -117,6 +130,9 @@ class Ui_Form(object):
         self.password_label.setText(_translate("Form", "Password:"))
         self.filename_label.setText(_translate("Form", "Filename:"))
         self.login_button.setText(_translate("Form", "Login"))
+        
+        self.outputButton.setText(_translate("Form", "Choose Output Folder"))#-----------
+        
         self.login_status.setText(_translate("Form", ""))
         self.pushButton.setText(_translate("Form", "Upload File"))
         self.label.setText(_translate("Form", "Choose word file\n"
@@ -144,12 +160,16 @@ class Ui_Form(object):
 
             # Show upload elements
             self.pushButton.setVisible(True)
+
+            self.outputButton.setVisible(True)#----------------
+            
             self.label.setVisible(True)
             self.progressBar.setVisible(True)
             self.label_2.setVisible(True)
             self.label_3.setVisible(True)
 
             self.pushButton.clicked.connect(lambda: self.choose_file(filename))
+            self.outputButton.clicked.connect(self.choose_output_folder)#---------------------
         else:
             self.login_status.setText("Incorrect username or password.")
 
