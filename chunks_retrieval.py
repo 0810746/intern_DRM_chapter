@@ -118,6 +118,7 @@ def chunks_retrieval(request: Request, body: ChunksBody) -> ChunksResponse:
         data=results,
     )
 
+from pydantic import BaseModel, Field
 # 示例用法
 if __name__ == "__main__":
     request_body = ChunksBody(
