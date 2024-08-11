@@ -95,3 +95,77 @@ if current_chapter:
 # 輸出結果
 for i, chapter in enumerate(chapters, 1):
     print(f"Chapter {i}:\n{chapter}\n{'='*20}\n")
+
+#===================================================================================
+elif element.name == 'table':
+    rows = element.find_all('tr')
+    table_md = []
+    colspans = []  # 用來儲存 colspan 信息
+    for i, row in enumerate(rows):
+        cells = row.find_all(['td', 'th'])
+         #===========
+        # 檢查並過濾完全空白的行
+        if all(cell.get_text(strip=True) == '' for cell in cells):
+            continue
+         #===========  
+        cell_texts = []
+        for j, cell in enumerate(cells):
+            # 替換換行符並保留 <br> 標籤
+            text = cell.get_text(separator="<br>").replace('\n', ' ')
+            #===========
+            # 如果單元格為空，插入一個空白字符以保留結構
+            if not text:
+                text = " "
+            #============
+            cell_texts.append(text)
+            
+            # 檢查 colspan 和 rowspan
+            colspan = int(cell.get('colspan', 1))
+            rowspan = int(cell.get('rowspan', 1))
+            
+            if colspan > 1:
+                colspans.append((j, colspan - 1))
+            if rowspan > 1:
+                for k in range(1, rowspan):
+                    if i + k < len(rows):
+                        if len(colspans) <= j:
+                            colspans.append((j, 0))
+                        colspans[j] = (j, colspans[j][1] + colspan - 1)
+
+        # 處理行內的 colspan
+        for index, span in reversed(colspans):
+            if span > 0:
+                cell_texts.insert(index + 1, ' ' * span)
+            colspans[index] = (index, span - 1)
+        # 保留那些包含部分空白的列
+        if any(cell_texts):  # 如果這一行中有任何單元格非空，保留整行
+            table_md.append('| ' + ' | '.join(cell_texts) + ' |')
+        # table_md.append('| ' + ' | '.join(cell_texts) + ' |')
+        
+        # 添加表頭與內容的分隔行
+        if i == 0:
+            table_md.append('| ' + ' | '.join(['---'] * len(cell_texts)) + ' |')
+
+    current_chapter.append('\n'.join(table_md))
+
+
+
+elif element.name in ['ul', 'ol']:
+    # 處理列表
+    list_type = element.get('type', 'disc')  # 默認為 'disc'，如果沒有設定 'type'
+    list_items = []
+
+    for i, li in enumerate(element.find_all('li'), start=1):
+        item_text = li.get_text(strip=True)
+        
+        if list_type == '1':
+            # 有序列表，使用數字標記
+            list_items.append(f"{i}. {item_text}")
+        elif list_type == 'disc':
+            # 無序列表，使用黑點標記
+            list_items.append(f"• {item_text}")
+        else:
+            # 處理其他可能的情況（例如 circle, square 等）
+            list_items.append(f"- {item_text}")
+
+    current_chapter.append('\n'.join(list_items))
