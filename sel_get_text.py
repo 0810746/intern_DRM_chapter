@@ -167,5 +167,42 @@ elif element.name in ['ul', 'ol']:
         else:
             # 處理其他可能的情況（例如 circle, square 等）
             list_items.append(f"- {item_text}")
+#=============================================================================
+# 初始化結果存儲
+table_data = []
+spans = {}  # 用來記錄儲存格的合併情況
 
+# 迭代行
+for row_index, row in enumerate(soup.find_all('tr')):
+    row_data = []
+    col_index = 0
+    cells = row.find_all(['td', 'th'])  # 找到所有的單元格
+    
+    while col_index < len(cells):
+        if (row_index, col_index) in spans:  # 處理上一行有合併的情況
+            row_data.append(spans.pop((row_index, col_index)))
+            col_index += 1
+            continue
+        
+        cell = cells[col_index]
+        cell_text = cell.get_text(strip=True)
+        
+        # 處理合併的單元格
+        rowspan = int(cell.get('rowspan', 1))
+        colspan = int(cell.get('colspan', 1))
+
+        row_data.append(cell_text)
+        
+        # 記錄合併的情況
+        for i in range(rowspan):
+            for j in range(colspan):
+                if i > 0 or j > 0:
+                    spans[(row_index + i, col_index + j)] = cell_text
+        
+        col_index += colspan
+
+    table_data.append(row_data)
+
+
+    
     current_chapter.append('\n'.join(list_items))
