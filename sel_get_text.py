@@ -1,3 +1,80 @@
+#===============================================================================
+def save_to_txt(chapters, output_file):
+    """
+    將章節內容保存到txt檔案中。
+
+    :param chapters: 章節內容列表
+    :param output_file: 輸出文件名稱
+    """
+    with open(output_file, 'w', encoding='utf-8') as file:
+        for title, content in chapters:
+            file.write(title + '\n')
+            file.write(content + '\n\n')
+
+from bs4 import BeautifulSoup
+
+def extract_text_by_heading(soup, recursive=False):
+    """
+    根據章節標籤抓取內容。
+
+    :param soup: BeautifulSoup物件
+    :param recursive: 如果為True，則根據h1到h6分章節；如果為False，則只根據h1分章節
+    :return: 章節內容列表
+    """
+    chapters = []
+    
+    # Define the range of headings to search for
+    headings = ['h1'] if not recursive else ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']
+
+    # Find all headings in the specified range, preserving their order in the document
+    elements = soup.find_all(headings)
+    
+    for elem in elements:
+        chapter_content = []
+        for sibling in elem.find_all_next(['p', 'span', 'br'] + headings, recursive=False):
+            if sibling.name in headings:
+                break
+            chapter_content.append(sibling.get_text(separator="\n", strip=True))
+        chapters.append((elem.get_text(), "\n".join(chapter_content)))
+
+    return chapters
+
+def print_chapters(chapters):
+    """
+    打印章節內容。
+
+    :param chapters: 章節內容列表
+    """
+    for i, (title, content) in enumerate(chapters, start=1):
+        print(f" {i}  : {title}")
+        print(content)
+        print("-" * 50)
+
+def main(html_content, recursive=False):
+    soup = BeautifulSoup(html_content, 'html.parser')
+    chapters = extract_text_by_heading(soup, recursive)
+    print_chapters(chapters)
+
+if __name__ == "__main__":
+    # 範例HTML內容
+    html_content = """
+    <h1>Chapter 1</h1>
+    <p>This is the content of chapter 1.</p>
+    <h2>Subsection 1.1</h2>
+    <p>This is the content of subsection 1.1.</p>
+    <h3>Sub-subsection 1.1.1</h3>
+    <p>This is the content of sub-subsection 1.1.1.</p>
+    <h1>Chapter 2</h1>
+    <p>This is the content of chapter 2.</p>
+    <h2>Subsection 2.1</h2>
+    <p>This is the content of subsection 2.1.</p>
+    """
+
+    # 依據需求來控制是否遞歸
+    main(html_content, recursive=True)  # 設為True將根據h2到h6分章節
+    # main(html_content, recursive=False) # 設為False將根據h1分章節
+
+#================================================================================
 # 使用 BeautifulSoup 解析 HTML
 soup = BeautifulSoup(html_content, 'html.parser')
 
